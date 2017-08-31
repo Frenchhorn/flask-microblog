@@ -1,0 +1,40 @@
+from flask import render_template, flash, redirect
+from app import app
+from app import lm
+from .forms import LoginForm
+
+@app.route('/')
+@app.route('/index')
+def index():
+    user = {'nickname': 'Miguel'}
+    posts = [
+        {
+            'author': {'nickname': 'John'},
+            'body': 'Beautiful day in Portland!'
+        },{
+            'author': {'nickname': 'Susan'},
+            'body': 'The Avengers movie was so cool'
+        }
+    ]
+    return render_template('index.html',
+        title = 'Home',
+        user = user,
+        posts = posts)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash('Login requested for OpenID="' + form.openid.data + '", remember_me=' + str(form.remember_me.data))
+        return redirect('/index')
+    return render_template('login.html',
+        title = 'Sign In',
+        form = form,
+        providers = app.config['OPENID_PROVIDERS'])
+
+@lm.user_loader
+def load_user(id):
+    '''
+    在 Flask-Login 中的用户 id 是字符串，因此在我们把 id 发送给 Flask-SQLAlchemy 之前，把 id 转成整型
+    '''
+    return User.query.get(int(id))
