@@ -5,13 +5,22 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), index = True, unique = True)
     email = db.Column(db.String(120), index = True, unique = True)
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime)
 
     def __init__(self, nickname, email):
         self.nickname = nickname
         self.email = email
+        self.about_me = ''
+        self.last_seen = datetime.utcnow()
+
 
     def __repr__(self):
         return '<User %r>' % (self.nickname)
+
+    def avatar(self, size):
+        size = str(size)
+        return 'https://unsplash.it/'+size+'/'+size+'/'+'?random'
 
     # Flask-Login 扩展需要在我们的 User 类中实现一些特定的方法。
     def is_authenticated(self):

@@ -1,13 +1,18 @@
+from datetime import datetime
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from .forms import LoginForm
+from .forms import LoginForm, EditForm
 from .models import User
 
 @app.before_request
 def before_request():
     # 全局变量 current_user 是被 Flask-Login 设置
     g.user = current_user
+    if g.user.is_authenticated:
+        g.user.last_seen = datetime.now()
+        db.session.add(g.user)
+        db.session.commit()
 
 @app.route('/')
 @app.route('/index')
@@ -28,6 +33,19 @@ def index():
         user = user,
         posts = posts)
 
+
+@app.route('/login/<nickname>', methods=['GET'])
+def login_test(nickname):
+    '''
+    用于测试
+    '''
+    user = User.query.filter_by(nickname=nickname).first()
+    if not user:
+        flash('Error')
+        return redirect(url_for('login'))
+    logout_user()
+    login_user(user, remember=True)
+    return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -86,6 +104,9 @@ def after_login(resp):
 
 @app.route('/logout')
 def logout():
+    '''
+    登出
+    '''
     logout_user()
     return redirect(url_for('index'))
 
@@ -93,6 +114,10 @@ def logout():
 @app.route('/user/<nickname>')
 @login_required
 def user(nickname):
+    '''
+    用户详情页
+    需要登录
+    '''
     user = User.query.filter_by(nickname=nickname).first()
     if user == None:
         flash('User ' + nickname + ' not found.')
@@ -104,3 +129,20 @@ def user(nickname):
     return render_template('user.html',
         user = user,
         posts = posts)
+
+
+@app.route('/edit', methods=['GET', 'POST'])
+@login_required
+def edit():
+    form = EditForm()
+    if form.validate_on_submit():
+        g.user.nickname = form.nickname.data
+        g.user.about_me = form.about_me.data
+        db.session.add(g.user)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('edit'))
+    else:
+        form.nickname.data = g.user.nickname
+        form.about_me.data = g.user.about_me
+    return render_template('edit.html', form=form)
