@@ -22,6 +22,21 @@ class User(db.Model):
         size = str(size)
         return 'https://unsplash.it/'+size+'/'+size+'/'+'?random'
 
+    @staticmethod
+    def make_unique_nickname(nickname):
+        '''
+        使用OpenID回调，创建用户时验证nickname是否已存在
+        '''
+        if User.query.filter_by(nickname=nickname).first() == None:
+            return nickname
+        version = 2
+        while True:
+            new_nickname = nickname + str(version)
+            if User.query.filter_by(nickname=nickname).first() == None:
+                break
+            version += 1
+        return new_nickname
+
     # Flask-Login 扩展需要在我们的 User 类中实现一些特定的方法。
     def is_authenticated(self):
         '''
