@@ -35,7 +35,7 @@ if True:
     mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT), 'no-reply@' + MAIL_SERVER, ADMINS, 'microblog failure', credentials)
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
-    app.logger.error('testtest')
+    # app.logger.error('testtest')
 
     '''
     保存到日志文件
@@ -46,4 +46,4 @@ if True:
     app.logger.setLevel(logging.INFO)
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
-    app.logger.info('microblog startup')
+    # app.logger.info('microblog startup')
