@@ -2,8 +2,8 @@ from datetime import datetime
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from .forms import LoginForm, EditForm
-from .models import User
+from .forms import LoginForm, EditForm, PostForm
+from .models import User, Post
 
 @app.before_request
 def before_request():
@@ -14,26 +14,33 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
     '''
     首页
     '''
-    user = g.user
-    posts = [
-        {
-            'author': {'nickname': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },{
-            'author': {'nickname': 'Susan'},
-            'body': 'The Avengers movie was so cool'
-        }
-    ]
+    form = PostForm()
+    # POST method
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, user=g.user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live!')
+        return redirect(url_for('index'))   # 避免用户在提交 blog 后不小心触发刷新的动作而导致插入重复的 blog
+    # Get method
+    # posts = g.user.followed_posts().all()   # 返回所有 blog
+    posts = g.user.followed_posts().paginate(1, 3, False).items
+    '''
+    页数， 从 1 开始
+    每一页的项目数，这里指每一页显示的 blog 数
+    错误标志，如果是 True，当请求的范围页超出范围的话，抛出 404 错误。如果是 False，返回一个空列表而不是错误。
+    paginate 返回的值是一个 Pagination 对象。这个对象的 items 成员包含了请求页面项目的列表。
+    '''
     return render_template('index.html',
         title = 'Home',
-        user = user,
+        form = form,
         posts = posts)
 
 

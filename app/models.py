@@ -33,7 +33,7 @@ class User(db.Model):
     def avatar(self, size):
         # 返回头像
         size = str(size)
-        return 'https://unsplash.it/'+size+'/'+size+'/'+'?random'
+        return 'https://unsplash.it/'+size+'/'+size+'/?random'
 
     @staticmethod
     def make_unique_nickname(nickname):
