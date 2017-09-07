@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
 from .forms import LoginForm, EditForm, PostForm
 from .models import User, Post
+from config import POSTS_PER_PAGE
 
 @app.before_request
 def before_request():
@@ -16,8 +17,9 @@ def before_request():
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
+@app.route('/index/<int:page>', methods=['GET', 'POST'])
 @login_required
-def index():
+def index(page=1):
     '''
     首页
     '''
@@ -31,12 +33,19 @@ def index():
         return redirect(url_for('index'))   # 避免用户在提交 blog 后不小心触发刷新的动作而导致插入重复的 blog
     # Get method
     # posts = g.user.followed_posts().all()   # 返回所有 blog
-    posts = g.user.followed_posts().paginate(1, 3, False).items
+    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False)
     '''
-    页数， 从 1 开始
+    页数， 默认为第 1 页
     每一页的项目数，这里指每一页显示的 blog 数
     错误标志，如果是 True，当请求的范围页超出范围的话，抛出 404 错误。如果是 False，返回一个空列表而不是错误。
     paginate 返回的值是一个 Pagination 对象。这个对象的 items 成员包含了请求页面项目的列表。
+    '''
+    '''
+    Pagination 对象具有以下对象
+    has_next：如果在目前页后至少还有一页的话，返回 True
+    has_prev：如果在目前页之前至少还有一页的话，返回 True
+    next_num：下一页的页面数
+    prev_num：前一页的页面数
     '''
     return render_template('index.html',
         title = 'Home',
@@ -129,8 +138,9 @@ def logout():
 
 
 @app.route('/user/<nickname>')
+@app.route('/user/<nickname>/<int:page>')
 @login_required
-def user(nickname):
+def user(nickname, page=1):
     '''
     用户详情页
     需要登录
@@ -139,10 +149,7 @@ def user(nickname):
     if user == None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
-    posts = [
-        { 'author': user, 'body': 'Test post #1' },
-        { 'author': user, 'body': 'Test post #2' }
-    ]
+    posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
     return render_template('user.html',
         user = user,
         posts = posts)
