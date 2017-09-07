@@ -1,5 +1,42 @@
+import os
+import unittest
+
+from config import basedir
+from app import app, db
+from app.models import User
+
 class TestCase(unittest.TestCase):
-    #...
+
+    def setUp(self):
+        app.config['TESTING'] = True
+        app.config['WTF_CSRF_ENABLED'] = False
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'test.db')
+        self.app = app.test_client()
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_avatar(self):
+        u = User(nickname='join', email='john@example.com')
+        avatar = u.avatar(128)
+        expected = 'https://unsplash.it/128/128/?random'
+        assert avatar == expected
+
+    def test_make_unique_nickname(self):
+        u = User(nickname='john', email='john@example.com')
+        db.session.add(u)
+        db.session.commit()
+        nickname = User.make_unique_nickname('john')
+        assert nickname != 'john'
+        u = User(nickname=nickname, email='susan@example.com')
+        db.session.add(u)
+        db.session.commit()
+        nickname2 = User.make_unique_nickname('john')
+        assert nickname2 != 'john'
+        assert nickname2 != nickname
+
     def test_follow(self):
         u1 = User(nickname = 'john', email = 'john@example.com')
         u2 = User(nickname = 'susan', email = 'susan@example.com')
@@ -72,3 +109,6 @@ class TestCase(unittest.TestCase):
         assert f2 == [p3, p2]
         assert f3 == [p4, p3]
         assert f4 == [p4]
+
+if __name__ == '__main__':
+    unittest.main()
