@@ -234,7 +234,7 @@ def search():
 @login_required
 def search_results(query):
     # ToDo
-    results = Post.query.all()
+    results = Post.query.filter(Post.body.like('%'+query+'%'))
     return render_template('search_results.html',
         query = query,
         results = results)

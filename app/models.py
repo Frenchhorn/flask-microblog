@@ -127,4 +127,8 @@ class Post(db.Model):
 >>> User.query.order_by('nickname desc').all()
 >>> post = Post.query.get(1)
 >>> post.user.query.get(1)
+
+>>> results = Post.query.filter(Post.body=='post1')
+>>> results = Post.query.filter(Post.body.like('%post%'))
+>>> results = Post.query.filter_by(body='post1')
 '''
