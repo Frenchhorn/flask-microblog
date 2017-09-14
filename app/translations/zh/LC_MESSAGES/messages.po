@@ -1,0 +1,206 @@
+# Chinese translations for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-09-14 18:34+0800\n"
+"PO-Revision-Date: 2017-09-14 18:35+0800\n"
+"Last-Translator: \n"
+"Language: zh\n"
+"Language-Team: zh <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.0\n"
+"X-Generator: Poedit 2.0.3\n"
+
+#: app/__init__.py:22
+msgid "Please log in to access this page."
+msgstr "请登录以访问这个页面"
+
+#: app/views.py:64
+msgid "Your post is now live!"
+msgstr "您的文章发布成功！"
+
+#: app/views.py:95
+msgid "Error"
+msgstr "错误"
+
+#: app/views.py:139
+msgid "Invalid login. Please try again."
+msgstr "登录失败，请重试。"
+
+#: app/views.py:182
+msgid "User not found."
+msgstr "未找到用戶。"
+
+#: app/views.py:202
+msgid "Your changes have been saved."
+msgstr "更改已保存。"
+
+#: app/views.py:218 app/views.py:242
+#, python-format
+msgid "User %s not found."
+msgstr "找不到用户 \"%s\"。"
+
+#: app/views.py:221
+msgid "You can't follow yourself!"
+msgstr "不能关注自己！"
+
+#: app/views.py:225
+#, python-format
+msgid "Cannot follow %s."
+msgstr "无法关注 %s。"
+
+#: app/views.py:229
+#, python-format
+msgid "You are now following %s!"
+msgstr "您现在正在关注%s！"
+
+#: app/views.py:245
+msgid "You can't unfollow yourself!"
+msgstr "无法停止关注自己！"
+
+#: app/views.py:249
+#, python-format
+msgid "Cannot unfollow %s."
+msgstr "无法取消关注%s。"
+
+#: app/views.py:253
+#, python-format
+msgid "You have stopped following %s!"
+msgstr "你已经停止关注%s！"
+
+#: app/templates/404.html:5
+msgid "File Not Found"
+msgstr "文件不存在"
+
+#: app/templates/404.html:6 app/templates/500.html:7
+msgid "Back"
+msgstr "返回"
+
+#: app/templates/500.html:5
+msgid "An unexpected error has occurred"
+msgstr "服务器发生错误"
+
+#: app/templates/500.html:6
+msgid "The administrator has been notified. Sorry for the inconvenience!"
+msgstr "管理者已注意到这个问题，很抱歉给您带来不便！"
+
+#: app/templates/base.html:4
+msgid "microblog"
+msgstr "微博"
+
+#: app/templates/base.html:6
+msgid "Welcome to microblog"
+msgstr "欢迎来到微博"
+
+#: app/templates/base.html:27
+msgid "Microblog"
+msgstr "微博"
+
+#: app/templates/base.html:29
+msgid "Home"
+msgstr "首页"
+
+#: app/templates/base.html:31
+msgid "Your Profile"
+msgstr "用户信息"
+
+#: app/templates/base.html:32
+msgid "Logout"
+msgstr "注销"
+
+#: app/templates/base.html:39
+msgid "Search"
+msgstr "搜索"
+
+#: app/templates/edit.html:5
+msgid "Edit Your Profile"
+msgstr "编辑你的用户信息"
+
+#: app/templates/edit.html:11
+msgid "Your nickname:"
+msgstr "你的名称："
+
+#: app/templates/edit.html:20
+msgid "About yourself:"
+msgstr "你的简介："
+
+#: app/templates/follower_email.html:1
+msgid "Dear"
+msgstr "亲爱的"
+
+#: app/templates/follower_email.html:12
+msgid "Regards,"
+msgstr "真诚的问候，"
+
+#: app/templates/index.html:5
+msgid "Hello,"
+msgstr "你好，"
+
+#: app/templates/index.html:11
+msgid "Say something:"
+msgstr "说些什么："
+
+#: app/templates/index.html:32 app/templates/index.html:34
+#: app/templates/user.html:32 app/templates/user.html:34
+msgid "Newer posts"
+msgstr "新的消息"
+
+#: app/templates/index.html:37 app/templates/index.html:39
+#: app/templates/user.html:37 app/templates/user.html:39
+msgid "Older posts"
+msgstr "旧的消息"
+
+#: app/templates/login.html:19
+msgid "Please Sign In"
+msgstr "请登录"
+
+#: app/templates/login.html:22
+msgid "Click on your OpenID provider below:"
+msgstr "点击以下你使用的 OpenID 提供商："
+
+#: app/templates/login.html:31
+msgid "Or enter your OpenID here:"
+msgstr "或者输入你的 OpenID："
+
+#: app/templates/login.html:42
+msgid "Remember Me"
+msgstr "记住"
+
+#: app/templates/post.html:7
+msgid "said:"
+msgstr "说："
+
+#: app/templates/user.html:15
+msgid "Last seen on:"
+msgstr "最后登录于："
+
+#: app/templates/user.html:17
+msgid "Followers:"
+msgstr "关注者："
+
+#: app/templates/user.html:17
+msgid "Following:"
+msgstr "正在关注："
+
+#: app/templates/user.html:19
+msgid "Edit your profile"
+msgstr "编辑你的用户信息"
+
+#: app/templates/user.html:21
+msgid "Unfollow"
+msgstr "取消关注"
+
+#: app/templates/user.html:23
+msgid "Follow"
+msgstr "关注"
+
+#~ msgid "said"
+#~ msgstr "说"

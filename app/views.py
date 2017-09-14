@@ -1,11 +1,13 @@
 from datetime import datetime
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
-from app import app, db, lm, oid
+from flask_babel import gettext
+from app import app, db, lm, oid, babel
 from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .models import User, Post
-from config import POSTS_PER_PAGE
+from config import POSTS_PER_PAGE, LANGUAGES
 from .emails import follower_notification
+
 
 @app.before_request
 def before_request():
@@ -16,6 +18,34 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
         g.search_form = SearchForm()
+    g.locale = get_locale()
+
+@app.errorhandler(404)
+def internal_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
+@babel.localeselector
+def get_locale():
+    '''
+    在py文件中使用  gettext 对所有需要翻译的字符串进行标记
+    在html文件中使用 _ 进行标记
+    提取文本： env\Scripts\pybabel extract -F babel.cfg -o messages.pot app
+    创建语言目录： env\Scripts\pybabel init -i messages.pot -d app/translations -l zh
+    翻译用 Poedit
+    更新(python i18n_update.py)：
+    env\Scripts\pybabel extract -F babel.cfg -k lazy_gettext -o messages.pot app
+    env\Scripts\pybabel update -i messages.pot -d app/translations
+    发布（Poedit会自动生成编译文件）：
+    env\Scripts\pybabel compile -d app/translations
+    '''
+    # return request.accept_languages.best_match(LANGUAGES.keys())
+    return 'zh'
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -31,7 +61,7 @@ def index(page=1):
         post = Post(body=form.post.data, user=g.user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is now live!')
+        flash(gettext('Your post is now live!'))
         return redirect(url_for('index'))   # 避免用户在提交 blog 后不小心触发刷新的动作而导致插入重复的 blog
     # Get method
     # posts = g.user.followed_posts().all()   # 返回所有 blog
@@ -62,7 +92,7 @@ def login_test(nickname):
     '''
     user = User.query.filter_by(nickname=nickname).first()
     if not user:
-        flash('Error')
+        flash(gettext('Error'))
         return redirect(url_for('login'))
     logout_user()
     if not user.is_following(user):
@@ -106,7 +136,7 @@ def after_login(resp):
     resp 参数传入给 after_login 函数，它包含了从 OpenID 提供商返回来的信息。
     '''
     if resp.email is None or resp.email == '':
-        flash('Invalid login. Please try again.')
+        flash(gettext('Invalid login. Please try again.'))
         return redirect(url_for('login'))
     user = User.query.filter_by(email=resp.email).first()
     # 从数据库中搜索邮箱地址。如果邮箱地址不在数据库中，添加一个新用户到数据库。
@@ -149,7 +179,7 @@ def user(nickname, page=1):
     '''
     user = User.query.filter_by(nickname=nickname).first()
     if user == None:
-        flash('User ' + nickname + ' not found.')
+        flash(gettext('User' + nickname + ' not found.'))
         return redirect(url_for('index'))
     posts = user.posts.order_by(Post.timestamp.desc()).paginate(page, POSTS_PER_PAGE, False)
     return render_template('user.html',
@@ -169,7 +199,7 @@ def edit():
         g.user.about_me = form.about_me.data
         db.session.add(g.user)
         db.session.commit()
-        flash('Your changes have been saved.')
+        flash(gettext('Your changes have been saved.'))
         return redirect(url_for('edit'))
     else:
         form.nickname.data = g.user.nickname
@@ -185,18 +215,18 @@ def follow(nickname):
     '''
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
-        flash('User $s not found.' % nickname)
+        flash(gettext('User %s not found.' % nickname))
         return redirect(url_for('index'))
     if user == g.user:
-        flash('You can\'t follow yourself!')
+        flash(gettext('You can\'t follow yourself!'))
         return redirect(url_for('user', nickname=nickname))
     u = g.user.follow(user)
     if u is None:
-        flash(' Cannot follow %s.' % nickname)
+        flash(gettext('Cannot follow %s.' % nickname))
         return redirect(url_for('user', nickname=nickname))
     db.session.add(u)
     db.session.commit()
-    flash('You are now following %s!' % nickname)
+    flash(gettext('You are now following %s!' % nickname))
     follower_notification(user, g.user)
     return redirect(url_for('user', nickname=nickname))
 
@@ -209,18 +239,18 @@ def unfollow(nickname):
     '''
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
-        flash('User $s not found.' % nickname)
+        flash(gettext('User %s not found.' % nickname))
         return redirect(url_for('index'))
     if user == g.user:
-        flash('You can\'t unfollow yourself!')
+        flash(gettext('You can\'t unfollow yourself!'))
         return redirect(url_for('user', nickname=nickname))
     u = g.user.unfollow(user)
     if u is None:
-        flash(' Cannot unfollow %s.' % nickname)
+        flash(gettext('Cannot unfollow %s.' % nickname))
         return redirect(url_for('user', nickname=nickname))
     db.session.add(u)
     db.session.commit()
-    flash('You have stopped following %s!' % nickname)
+    flash(gettext('You have stopped following %s!' % nickname))
     return redirect(url_for('user', nickname=nickname))
 
 
@@ -240,14 +270,3 @@ def search_results(query):
     return render_template('search_results.html',
         query = query,
         results = results)
-
-
-@app.errorhandler(404)
-def internal_error(error):
-    return render_template('404.html'), 404
-
-
-@app.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500

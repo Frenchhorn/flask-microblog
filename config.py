@@ -17,7 +17,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 # SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-# mail server settings
+# 邮件服务器设置
 MAIL_SERVER = 'localhost'
 MAIL_PORT = 25
 MAIL_USE_TLS = False
@@ -25,8 +25,14 @@ MAIL_USE_SSL = False
 MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
-# administrator list
+# 管理员邮件列表
 ADMINS = ['test@test.com']
 
-# pagination
+# 分页
 POSTS_PER_PAGE = 3
+
+# I18n
+LANGUAGES = {
+    'en': 'English',
+    'zh': 'Chinese'
+}
