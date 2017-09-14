@@ -12,7 +12,7 @@ def before_request():
     # 全局变量 current_user 是被 Flask-Login 设置
     g.user = current_user
     if g.user.is_authenticated:
-        g.user.last_seen = datetime.now()
+        g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
         g.search_form = SearchForm()
