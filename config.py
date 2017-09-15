@@ -36,3 +36,8 @@ LANGUAGES = {
     'en': 'English',
     'zh': 'Chinese'
 }
+
+# 启用 Flask-SQLAlchemy 的 get_debug_queries 功能
+SQLALCHEMY_RECORD_QUERIES = True
+
+DATABASE_QUERY_TIMEOUT = 0.5

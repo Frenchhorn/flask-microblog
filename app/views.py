@@ -2,10 +2,11 @@ from datetime import datetime
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_babel import gettext
+from flask_sqlalchemy import get_debug_queries
 from app import app, db, lm, oid, babel
 from .forms import LoginForm, EditForm, PostForm, SearchForm
 from .models import User, Post
-from config import POSTS_PER_PAGE, LANGUAGES
+from config import POSTS_PER_PAGE, LANGUAGES, DATABASE_QUERY_TIMEOUT
 from .emails import follower_notification
 
 
@@ -19,6 +20,13 @@ def before_request():
         db.session.commit()
         g.search_form = SearchForm()
     g.locale = get_locale()
+
+@app.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= DATABASE_QUERY_TIMEOUT:
+            app.logger.warning("SLOW QUERY: %s\nParameters: %s\nDuration: %s\nContext: %s\n" % (query.statement, query.parameters, query.duration, query.context))
+    return response
 
 @app.errorhandler(404)
 def internal_error(error):
