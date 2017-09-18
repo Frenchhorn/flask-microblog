@@ -7,6 +7,7 @@
 <div class="well">
     <form class="form-horizontal" action="" method="POST" name="post">
         {{ form.csrf_token }}
+        <!-- 用 form.csrf_token 或者 form.hidden_tag() -->
         <div class="control-group {% if form.errors.post %} error {% endif %}">
             <label class="control-label" for="post">{{ _('Say something:') }}</label>
             <div class="controls">
